@@ -3,6 +3,11 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <grp.h>
+#include <time.h>
 
 void tiraenter(char texto[]){
     int tam;
@@ -61,7 +66,7 @@ int main(int argc, char const *argv[])
             valido = 1;
         }
         
-        if (strcmp(args[0], "ls") == 0)
+        if (strcmp(args[0], "ls") == 0 && tam == 1)
         {
             /*CHAMADA DE SISTEMA OPENDIR*/
             DIR *dir = opendir(getcwd(buf, size));
@@ -79,6 +84,100 @@ int main(int argc, char const *argv[])
             printf("\n");
             closedir(dir);
             valido = 1;
+        }
+        if (strcmp(args[0], "ls") == 0 && strcmp(args[1], "-a") == 0 && tam == 2)
+        {
+            /*CHAMADA DE SISTEMA OPENDIR*/
+            DIR *dir = opendir(getcwd(buf, size));
+            if (dir == NULL)
+            {
+                printf("chamada de sistema falhou\n");
+            }
+            /*CHAMADA DE SISTEMA READDIR*/
+            while ((entry = readdir(dir)) != NULL) {
+                
+                printf("%s ", entry->d_name);
+            }
+            printf("\n");
+            closedir(dir);
+            valido = 1;
+        }
+        if (strcmp(args[0], "ls") == 0 && (strcmp(args[1], "-l") == 0 || strcmp(args[2], "-l") == 0))
+        {
+            /*CHAMADA DE SISTEMA OPENDIR*/
+            DIR *dir = opendir(getcwd(buf, size));
+            if (dir == NULL)
+            {
+                printf("chamada de sistema falhou\n");
+            }
+            /*CHAMADA DE SISTEMA READDIR*/
+            while ((entry = readdir(dir)) != NULL) {
+                if (strcmp(args[1], "-a") == 0 || strcmp(args[2], "-a") == 0)
+                {
+                    strcpy(caminho, getcwd(buf, size));
+                    strcat(caminho, "/");
+                    strcat(caminho, entry->d_name);
+                    struct stat file_stat;
+                    if (lstat(caminho, &file_stat) == 0) {
+                        printf((S_ISDIR(file_stat.st_mode)) ? "d" : "-");
+                        printf((file_stat.st_mode & S_IRUSR) ? "r" : "-");
+                        printf((file_stat.st_mode & S_IWUSR) ? "w" : "-");
+                        printf((file_stat.st_mode & S_IXUSR) ? "x" : "-");
+
+                        printf(" %ld", (long)file_stat.st_nlink);
+
+                        struct passwd *pw = getpwuid(file_stat.st_uid);
+                        struct group *gr = getgrgid(file_stat.st_gid);
+                        printf(" %s %s", pw->pw_name, gr->gr_name);
+
+                        printf(" %lld", (long long)file_stat.st_size);
+
+                        // Data de modificação
+                        char time_str[100];
+                        strftime(time_str, sizeof(time_str), "%b %d %H:%M", localtime(&file_stat.st_mtime));
+                        printf(" %s", time_str);
+
+                        printf(" %s ", entry->d_name);
+
+                        printf("\n");
+                    }
+                }else
+                {
+                    strcpy(caminho, getcwd(buf, size));
+                    strcat(caminho, "/");
+                    strcat(caminho, entry->d_name);
+                    struct stat file_stat;
+                    if (lstat(caminho, &file_stat) == 0) {
+                        if(entry->d_name[0] != '.'){
+                        printf((S_ISDIR(file_stat.st_mode)) ? "d" : "-");
+                        printf((file_stat.st_mode & S_IRUSR) ? "r" : "-");
+                        printf((file_stat.st_mode & S_IWUSR) ? "w" : "-");
+                        printf((file_stat.st_mode & S_IXUSR) ? "x" : "-");
+
+                        printf(" %ld", (long)file_stat.st_nlink);
+
+                        struct passwd *pw = getpwuid(file_stat.st_uid);
+                        struct group *gr = getgrgid(file_stat.st_gid);
+                        printf(" %s %s", pw->pw_name, gr->gr_name);
+
+                        printf(" %lld", (long long)file_stat.st_size);
+
+                        // Data de modificação
+                        char time_str[100];
+                        strftime(time_str, sizeof(time_str), "%b %d %H:%M", localtime(&file_stat.st_mtime));
+                        printf(" %s", time_str);
+
+                        printf(" %s ", entry->d_name);
+
+                        printf("\n");
+                    }
+                    }
+                    
+                }
+            }
+            closedir(dir);
+            valido = 1;
+            
         }
         if (strcmp(args[0], "cd") == 0 && tam == 1)
         {

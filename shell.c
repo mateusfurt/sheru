@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <dirent.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
@@ -18,6 +19,7 @@ int main(int argc, char const *argv[])
     char texto[600], args[3][605];
     char buf[500];
     char caminho[500];
+    struct dirent *entry;
     /*CHAMADA DE SISTEMA GETOGIN*/
     char *user = getlogin();
     size_t size = 500;
@@ -40,7 +42,7 @@ int main(int argc, char const *argv[])
         valido = 0;
         printf("\033[1;32m");
         /*CHAMADA DE SISTEMA GETCWD*/
-    printf("%s@Sheru \033[1;33m ~%s\033[0m$ ", user, getcwd(buf, size));
+        printf("%s@Sheru \033[1;33m ~%s\033[0m$ ", user, getcwd(buf, size));
         printf("\033[0m");
         
         fgets(texto, sizeof(texto), stdin);
@@ -61,7 +63,21 @@ int main(int argc, char const *argv[])
         
         if (strcmp(args[0], "ls") == 0)
         {
-            system("ls");
+            /*CHAMADA DE SISTEMA OPENDIR*/
+            DIR *dir = opendir(getcwd(buf, size));
+            if (dir == NULL)
+            {
+                printf("chamada de sistema falhou\n");
+            }
+            /*CHAMADA DE SISTEMA READDIR*/
+            while ((entry = readdir(dir)) != NULL) {
+                
+                if(entry->d_name[0] != '.'){
+                    printf("%s ", entry->d_name);
+                }
+            }
+            printf("\n");
+            closedir(dir);
             valido = 1;
         }
         if (strcmp(args[0], "cd") == 0 && tam == 1)

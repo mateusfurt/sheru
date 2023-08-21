@@ -8,6 +8,7 @@
 #include <pwd.h>
 #include <grp.h>
 #include <time.h>
+#include <fcntl.h>
 
 void tiraenter(char texto[]){
     int tam;
@@ -21,7 +22,7 @@ void tiraenter(char texto[]){
 int main(int argc, char const *argv[])
 {
     int tam, valido, i, teste;
-    char texto[600], args[3][605];
+    char texto[600], args[3][605], conteudo[5000];
     char buf[500];
     char caminho[500];
     struct dirent *entry;
@@ -231,6 +232,23 @@ int main(int argc, char const *argv[])
             puts("Saindo...");
             /*CHAMADA DE SISTEMA EXIT*/
             exit(0);
+        }
+        if(strcmp(args[0], "cat") == 0){
+            int arquivo;
+            printf("gato");
+            strcpy(caminho, getcwd(buf, size));
+            strcat(caminho, "/");
+            strcat(caminho, args[1]);
+            printf("%s\n", caminho);
+            arquivo = open (caminho, O_RDONLY);
+            if (arquivo < 0){
+                printf("erro ao abrir arquivo\n");
+            }else
+            {
+                read(arquivo, conteudo, 5000);
+                printf("%s\n", conteudo);
+            }
+            valido = 1;
         }
         if (valido == 0)
         {

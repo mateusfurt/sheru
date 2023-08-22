@@ -233,13 +233,11 @@ int main(int argc, char const *argv[])
             /*CHAMADA DE SISTEMA EXIT*/
             exit(0);
         }
-        if(strcmp(args[0], "cat") == 0){
+        if(strcmp(args[0], "cat") == 0 && tam == 2){
             int arquivo;
-            printf("gato");
             strcpy(caminho, getcwd(buf, size));
             strcat(caminho, "/");
-            strcat(caminho, args[1]);
-            printf("%s\n", caminho);
+            strcat(caminho, args[1]);;
             arquivo = open (caminho, O_RDONLY);
             if (arquivo < 0){
                 printf("erro ao abrir arquivo\n");
@@ -248,8 +246,65 @@ int main(int argc, char const *argv[])
                 read(arquivo, conteudo, 5000);
                 printf("%s\n", conteudo);
             }
+            close(arquivo);
             valido = 1;
         }
+        if (strcmp(args[0], "mkdir") == 0 && tam == 2)
+        {
+            strcpy(caminho, getcwd(buf, size));
+            strcat(caminho, "/");
+            strcat(caminho, args[1]);
+            mkdir(caminho, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+            valido = 1;
+        }
+        if (strcmp(args[0], "rm") == 0 && tam == 2)
+        {
+            strcpy(caminho, getcwd(buf, size));
+            strcat(caminho, "/");
+            strcat(caminho, args[1]);
+            unlink(caminho);
+            rmdir(caminho);
+            valido = 1;
+        }
+        if (strcmp(args[0], "cp") == 0 && tam == 3)
+        {
+            int origem, destino;
+            strcpy(caminho, getcwd(buf, size));
+            strcat(caminho, "/");
+            strcat(caminho, args[2]);
+            destino = open (caminho,  O_WRONLY | O_CREAT | O_TRUNC, 0755);
+            strcpy(caminho, getcwd(buf, size));
+            strcat(caminho, "/");
+            strcat(caminho, args[1]);
+            origem = open(caminho, O_RDONLY);
+            read(origem, conteudo, 5000);
+            printf("%s", conteudo);
+            write(destino, conteudo, strlen(conteudo));
+            close(destino);
+            close(origem);
+            valido =1;
+        }
+        if (strcmp(args[0], "mv") == 0 && tam == 3)
+        {
+            int origem, destino;
+            strcpy(caminho, getcwd(buf, size));
+            strcat(caminho, "/");
+            strcat(caminho, args[2]);
+            destino = open (caminho,  O_WRONLY | O_CREAT | O_TRUNC, 0755);
+            strcpy(caminho, getcwd(buf, size));
+            strcat(caminho, "/");
+            strcat(caminho, args[1]);
+            origem = open(caminho, O_RDONLY);
+            read(origem, conteudo, 5000);
+            printf("%s", conteudo);
+            write(destino, conteudo, strlen(conteudo));
+            unlink(caminho);
+            close(destino);
+            close(origem);
+            valido =1;
+        }
+        
+        
         if (valido == 0)
         {
             printf("%s: comando nao encontrado\n", args[0]);

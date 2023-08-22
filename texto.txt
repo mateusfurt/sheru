@@ -1,6 +1,6 @@
-PRIMEIRA LINHA
-SEGUNDA LINHA 
-TERCEIRA LINHA
+primeira linha
+segunda linha
+terceira linha
 git add .
 git commit -m "commit"
 git push -u origin master

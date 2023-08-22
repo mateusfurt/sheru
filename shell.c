@@ -10,6 +10,22 @@
 #include <time.h>
 #include <fcntl.h>
 
+void sortnome(char **vet, int tam){
+  int i, j, menor;
+  char tmp[500];
+  for (i = 0; i < tam-1; i++) {
+    menor = i;
+    for (j = i + 1; j < tam; j++) {
+      if (strcmp(vet[j], vet[menor]) < 0) {
+        menor = j;
+      }
+    }
+    strcpy(tmp, vet[menor]);
+    strcpy(vet[menor], vet[i]);
+    strcpy(vet[i], tmp);
+  }
+}
+
 void tiraenter(char texto[]){
     int tam;
     tam = strlen(texto);
@@ -21,7 +37,7 @@ void tiraenter(char texto[]){
 
 int main(int argc, char const *argv[])
 {
-    int tam, valido, i, teste;
+    int tam, valido, i, teste, j, k;
     char texto[600], args[3][605], conteudo[5000];
     char buf[500];
     char caminho[500];
@@ -278,7 +294,6 @@ int main(int argc, char const *argv[])
             strcat(caminho, args[1]);
             origem = open(caminho, O_RDONLY);
             read(origem, conteudo, 5000);
-            printf("%s", conteudo);
             write(destino, conteudo, strlen(conteudo));
             close(destino);
             close(origem);
@@ -296,11 +311,79 @@ int main(int argc, char const *argv[])
             strcat(caminho, args[1]);
             origem = open(caminho, O_RDONLY);
             read(origem, conteudo, 5000);
-            printf("%s", conteudo);
             write(destino, conteudo, strlen(conteudo));
             unlink(caminho);
             close(destino);
             close(origem);
+            valido =1;
+        }
+        if (strcmp(args[0], "sort") == 0 && tam == 2)
+        {
+            int arquivo, count = 1, menor;
+            strcpy(caminho, getcwd(buf, size));
+            strcat(caminho, "/");
+            strcat(caminho, args[1]);
+            arquivo = open(caminho, O_RDONLY);
+            read(arquivo, conteudo, 5000);
+            for ( i = 0; i < strlen(conteudo); i++)
+            {
+                if (conteudo[i]=='\n')
+                {
+                    count++;
+                }
+                
+            }
+            char **linhas = (char **)malloc(count * sizeof(char*));
+            for(int i = 0; i < count; i++) linhas[i] = (char *)malloc(500 * sizeof(char));;
+            for (i = 0; i < count; i++)
+            {
+                printf("%s\n", linhas[i]);
+                
+            }
+            for(int i = 0; i < count; i++) strcpy(linhas[i], "");
+            for ( i = 0, j==0, k=0; k < strlen(conteudo);j++, k++)
+            {
+                linhas[i][j]=conteudo[k];
+                if (conteudo[k]=='\n')
+                {
+                    linhas[i][j]='\0';
+                    j=-1;
+                    i++;
+                }
+                
+            }
+
+            /*-----------------------------------------------*/
+            char tmp[500];
+            for (i = 0; i < count-1; i++) {
+                menor = i;
+                strcpy(tmp, linhas[i]);
+                for (j = i + 1; j < count; j++) {
+                    if (strcmp(linhas[j], linhas[menor]) < 0) {
+                        menor = j;
+                        strcpy(tmp, linhas[j]);
+                        //printf("%s\n", tmp);
+                    }
+                }
+                
+                //printf("%s\n", linhas[menor]);
+                strcpy(tmp, linhas[menor]);
+                strcpy(linhas[menor], linhas[i]);
+                strcpy(linhas[i], tmp);
+            }
+            /*-----------------------------------------------*/
+            for (i = 0; i < count; i++)
+            {
+                printf("%s\n", linhas[i]);
+                
+            }
+            for ( i = 0; i < count; i++)
+            {
+                free(linhas[i]);
+            }
+            
+            free(linhas);
+            close(arquivo);
             valido =1;
         }
         

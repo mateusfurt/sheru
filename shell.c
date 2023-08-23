@@ -116,9 +116,7 @@ int main(int argc, char const *argv[])
             {
                 printf("chamada de sistema falhou\n");
             }else{
-                
-            }
-            /*CHAMADA DE SISTEMA READDIR*/
+                /*CHAMADA DE SISTEMA READDIR*/
             while ((entry = readdir(dir)) != NULL) {
                 if (strcmp(args[1], "-a") == 0 || strcmp(args[2], "-a") == 0)
                 {
@@ -187,6 +185,8 @@ int main(int argc, char const *argv[])
             }
             /*CHAMADA DE SISTEMA CLOSEDIR*/
             closedir(dir);
+            }
+            
             valido = 1;
             
         }
@@ -269,7 +269,12 @@ int main(int argc, char const *argv[])
             strcpy(caminho, getcwd(buf, size));
             strcat(caminho, "/");
             strcat(caminho, args[1]);
-            mkdir(caminho, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+            
+            if (mkdir(caminho, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) < 0)
+            {
+                printf("falha em chamada de sistema");
+            }
+            
             valido = 1;
         }
         if (strcmp(args[0], "rm") == 0 && tam == 2)
@@ -297,14 +302,21 @@ int main(int argc, char const *argv[])
             strcat(caminho, args[1]);
             /*CHAMADA DE SISTEMA OPEN*/
             origem = open(caminho, O_RDONLY);
-            /*CHAMADA DE SISTEMA READ*/
-            read(origem, conteudo, 5000);
-            write(destino, conteudo, strlen(conteudo));
-            /*CHAMADA DE SISTEMA CLOSE*/
-            close(destino);
-            close(origem);
-            valido =1;
+            if (origem< 0 || destino<0)
+            {
+                printf("falha na chamada de sistema");
+            }else{
+                /*CHAMADA DE SISTEMA READ*/
+                read(origem, conteudo, 5000);
+                write(destino, conteudo, strlen(conteudo));
+                /*CHAMADA DE SISTEMA CLOSE*/
+                close(destino);
+                close(origem);
+                valido = 1;
+            }
         }
+            
+            
         if (strcmp(args[0], "mv") == 0 && tam == 3)
         {
             int origem, destino;
@@ -320,15 +332,18 @@ int main(int argc, char const *argv[])
             strcat(caminho, args[1]);
             /*CHAMADA DE SISTEMA OPEN*/
             origem = open(caminho, O_RDONLY);
-            /*CHAMADA DE SISTEMA READ*/
-            read(origem, conteudo, 5000);
-            /*CHAMADA DE SISTEMA WRITE*/
-            write(destino, conteudo, strlen(conteudo));
-            unlink(caminho);
-            /*CHAMADA DE SISTEMA CLOSE*/
-            close(destino);
-            close(origem);
-            valido =1;
+            if (origem<0||destino<0)
+            {
+                /*CHAMADA DE SISTEMA READ*/
+                read(origem, conteudo, 5000);
+                /*CHAMADA DE SISTEMA WRITE*/
+                write(destino, conteudo, strlen(conteudo));
+                unlink(caminho);
+                /*CHAMADA DE SISTEMA CLOSE*/
+                close(destino);
+                close(origem);
+                valido =1;
+            }
         }
         if (strcmp(args[0], "sort") == 0 && tam == 2)
         {
@@ -339,6 +354,7 @@ int main(int argc, char const *argv[])
             strcat(caminho, args[1]);
             /*CHAMADA DE SISTEMA OPEN*/
             arquivo = open(caminho, O_RDONLY);
+            
             /*CHAMADA DE SISTEMA READ*/
             read(arquivo, conteudo, 5000);
             for ( i = 0; i < strlen(conteudo); i++)

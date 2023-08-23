@@ -272,7 +272,7 @@ int main(int argc, char const *argv[])
             
             if (mkdir(caminho, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) < 0)
             {
-                printf("falha em chamada de sistema");
+                printf("chamada de sistema falhou\n");
             }
             
             valido = 1;
@@ -304,7 +304,7 @@ int main(int argc, char const *argv[])
             origem = open(caminho, O_RDONLY);
             if (origem< 0 || destino<0)
             {
-                printf("falha na chamada de sistema");
+                printf("erro ao abrir arquivo\n");
             }else{
                 /*CHAMADA DE SISTEMA READ*/
                 read(origem, conteudo, 5000);
@@ -334,6 +334,8 @@ int main(int argc, char const *argv[])
             origem = open(caminho, O_RDONLY);
             if (origem<0||destino<0)
             {
+                printf("erro ao abrir arquivo\n");
+            }else{
                 /*CHAMADA DE SISTEMA READ*/
                 read(origem, conteudo, 5000);
                 /*CHAMADA DE SISTEMA WRITE*/
@@ -354,8 +356,12 @@ int main(int argc, char const *argv[])
             strcat(caminho, args[1]);
             /*CHAMADA DE SISTEMA OPEN*/
             arquivo = open(caminho, O_RDONLY);
-            
-            /*CHAMADA DE SISTEMA READ*/
+            if (arquivo<0)
+            {
+                printf("erro ao abrir arquivo\n");
+            }else
+            {
+                /*CHAMADA DE SISTEMA READ*/
             read(arquivo, conteudo, 5000);
             for ( i = 0; i < strlen(conteudo); i++)
             {
@@ -401,6 +407,10 @@ int main(int argc, char const *argv[])
             }
             
             free(linhas);
+            }
+            
+            
+            
             /*CHAMADA DE SISTEMA CLOSE*/
             close(arquivo);
             valido = 1;

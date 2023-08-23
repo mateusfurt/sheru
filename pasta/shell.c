@@ -50,9 +50,7 @@ int main(int argc, char const *argv[])
         /*CHAMADA DE SISTEMA GETCWD*/
         printf("%s@Sheru \033[1;33m ~%s\033[0m$ ", user, getcwd(buf, size));
         printf("\033[0m");
-
-        /*##################################################################*/
-
+        
         fgets(texto, sizeof(texto), stdin);
         tiraenter(texto);
         char *token = strtok(texto, " ");
@@ -62,33 +60,11 @@ int main(int argc, char const *argv[])
             token = strtok(NULL, " ");
         }
         tam = i;
-        
-        /*##################################################################*/
-
         if (strcmp(texto, "") == 0)
         {
             valido = 1;
         }
-
-        /*##################################################################*/
-
-        if (strcmp(args[0], "mkdir") == 0 && tam == 2)
-        {
-            /*CHAMADA DE SISTEMA GETCWD*/
-            strcpy(caminho, getcwd(buf, size));
-            strcat(caminho, "/");
-            strcat(caminho, args[1]);
-            
-            if (mkdir(caminho, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) < 0)
-            {
-                printf("chamada de sistema falhou\n");
-            }
-            
-            valido = 1;
-        }
-
-        /*##################################################################*/
-
+        
         if (strcmp(args[0], "ls") == 0 && tam == 1)
         {
             /*CHAMADA DE SISTEMA OPENDIR e GETCWD*/
@@ -101,12 +77,7 @@ int main(int argc, char const *argv[])
                 while ((entry = readdir(dir)) != NULL) {
                     
                     if(entry->d_name[0] != '.'){
-                        if (entry->d_type == 4)
-                        {
-                            printf("\033[1;34m");
-                        }
-                        printf("%s   ", entry->d_name);
-                        printf("\033[1;0m");
+                        printf("%s ", entry->d_name);
                     }
                 }
                 printf("\n");
@@ -116,9 +87,6 @@ int main(int argc, char const *argv[])
             
             valido = 1;
         }
-
-        /*##################################################################*/
-
         if (strcmp(args[0], "ls") == 0 && strcmp(args[1], "-a") == 0 && tam == 2)
         {
             /*CHAMADA DE SISTEMA OPENDIR e GETCWD*/
@@ -129,13 +97,8 @@ int main(int argc, char const *argv[])
             }else{
                 /*CHAMADA DE SISTEMA READDIR*/
                 while ((entry = readdir(dir)) != NULL) {
-                    if (entry->d_type == 4)
-                        {
-                            printf("\033[1;34m");
-                        }
                     
-                    printf("%s   ", entry->d_name);
-                    printf("\033[1;0m");
+                    printf("%s ", entry->d_name);
                 }
                 printf("\n");
                 /*CHAMADA DE SISTEMA CLOSEDIR*/
@@ -145,9 +108,7 @@ int main(int argc, char const *argv[])
             valido = 1;
         }
 
-        /*##################################################################*/
-
-        if (tam > 1 && strcmp(args[0], "ls") == 0 && (strcmp(args[1], "-l") == 0 || strcmp(args[2], "-l") == 0))
+        if (strcmp(args[0], "ls") == 0 && (strcmp(args[1], "-l") == 0 || strcmp(args[2], "-l") == 0))
         {
             /*CHAMADA DE SISTEMA OPENDIR e GETCWD*/
             DIR *dir = opendir(getcwd(buf, size));
@@ -163,8 +124,6 @@ int main(int argc, char const *argv[])
                     strcpy(caminho, getcwd(buf, size));
                     strcat(caminho, "/");
                     strcat(caminho, entry->d_name);
-                    
-                    
                     struct stat file_stat;
                     if (lstat(caminho, &file_stat) == 0) {
                         printf((S_ISDIR(file_stat.st_mode)) ? "d" : "-");
@@ -227,25 +186,10 @@ int main(int argc, char const *argv[])
             /*CHAMADA DE SISTEMA CLOSEDIR*/
             closedir(dir);
             }
-            valido = 1;
-        }
-
-        /*##################################################################*/
-
-        if (strcmp(args[0], "pwd") == 0)
-        {
-            /*CHAMADA DE SISTEMA GETCWD*/
-            if (getcwd(buf, size) == NULL)
-            {
-                printf("chamada de sistema falhou\n");
-            }
             
-            printf("%s\n", buf);
             valido = 1;
+            
         }
-        
-        /*##################################################################*/
-
         if (strcmp(args[0], "cd") == 0 && tam == 1)
         {
             strcpy(caminho, "/home/");
@@ -258,9 +202,6 @@ int main(int argc, char const *argv[])
             
             valido = 1;
         }
-
-        /*##################################################################*/
-
         if (strcmp(args[0], "cd") == 0 && tam == 2)
         {
             if (strcmp(args[1], "/")==0)
@@ -281,9 +222,101 @@ int main(int argc, char const *argv[])
             }
             valido = 1;
         }
-
-        /*##################################################################*/
-
+        
+        
+        
+        if (strcmp(args[0], "pwd") == 0)
+        {
+            /*CHAMADA DE SISTEMA GETCWD*/
+            if (getcwd(buf, size) == NULL)
+            {
+                printf("chamada de sistema falhou\n");
+            }
+            
+            printf("%s\n", buf);
+            valido = 1;
+        }
+        
+        if (strcmp(args[0], "exit") == 0)
+        {
+            puts("Saindo...");
+            /*CHAMADA DE SISTEMA EXIT*/
+            exit(0);
+        }
+        if(strcmp(args[0], "cat") == 0 && tam == 2){
+            int arquivo;
+            /*CHAMADA DE SISTEMA GETCWD*/
+            strcpy(caminho, getcwd(buf, size));
+            strcat(caminho, "/");
+            strcat(caminho, args[1]);
+            /*CHAMADA DE SISTEMA OPEN*/
+            arquivo = open(caminho, O_RDONLY);
+            if (arquivo < 0){
+                printf("erro ao abrir arquivo\n");
+            }else
+            {
+                /*CHAMADA DE SISTEMA READ*/
+                read(arquivo, conteudo, 5000);
+                printf("%s\n", conteudo);
+            }
+            /*CHAMADA DE SISTEMA CLOSE*/
+            close(arquivo);
+            valido = 1;
+        }
+        if (strcmp(args[0], "mkdir") == 0 && tam == 2)
+        {
+            /*CHAMADA DE SISTEMA GETCWD*/
+            strcpy(caminho, getcwd(buf, size));
+            strcat(caminho, "/");
+            strcat(caminho, args[1]);
+            
+            if (mkdir(caminho, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) < 0)
+            {
+                printf("chamada de sistema falhou\n");
+            }
+            
+            valido = 1;
+        }
+        if (strcmp(args[0], "rm") == 0 && tam == 2)
+        {
+            /*CHAMADA DE SISTEMA GETCWD*/
+            strcpy(caminho, getcwd(buf, size));
+            strcat(caminho, "/");
+            strcat(caminho, args[1]);
+            unlink(caminho);
+            rmdir(caminho);
+            valido = 1;
+        }
+        if (strcmp(args[0], "cp") == 0 && tam == 3)
+        {
+            int origem, destino;
+            /*CHAMADA DE SISTEMA GETCWD*/
+            strcpy(caminho, getcwd(buf, size));
+            strcat(caminho, "/");
+            strcat(caminho, args[2]);
+            /*CHAMADA DE SISTEMA OPEN*/
+            destino = open (caminho,  O_WRONLY | O_CREAT | O_TRUNC, 0755);
+            /*CHAMADA DE SISTEMA GETCWD*/
+            strcpy(caminho, getcwd(buf, size));
+            strcat(caminho, "/");
+            strcat(caminho, args[1]);
+            /*CHAMADA DE SISTEMA OPEN*/
+            origem = open(caminho, O_RDONLY);
+            if (origem< 0 || destino<0)
+            {
+                printf("erro ao abrir arquivo\n");
+            }else{
+                /*CHAMADA DE SISTEMA READ*/
+                read(origem, conteudo, 5000);
+                write(destino, conteudo, strlen(conteudo));
+                /*CHAMADA DE SISTEMA CLOSE*/
+                close(destino);
+                close(origem);
+                valido = 1;
+            }
+        }
+            
+            
         if (strcmp(args[0], "mv") == 0 && tam == 3)
         {
             int origem, destino;
@@ -314,76 +347,6 @@ int main(int argc, char const *argv[])
                 valido =1;
             }
         }
-
-        /*##################################################################*/
-
-        if (strcmp(args[0], "rm") == 0 && tam == 2)
-        {
-            /*CHAMADA DE SISTEMA GETCWD*/
-            strcpy(caminho, getcwd(buf, size));
-            strcat(caminho, "/");
-            strcat(caminho, args[1]);
-            unlink(caminho);
-            rmdir(caminho);
-            valido = 1;
-        }
-
-        /*##################################################################*/
-
-        if (strcmp(args[0], "cp") == 0 && tam == 3)
-        {
-            int origem, destino;
-            /*CHAMADA DE SISTEMA GETCWD*/
-            strcpy(caminho, getcwd(buf, size));
-            strcat(caminho, "/");
-            strcat(caminho, args[2]);
-            /*CHAMADA DE SISTEMA OPEN*/
-            destino = open (caminho,  O_WRONLY | O_CREAT | O_TRUNC, 0755);
-            /*CHAMADA DE SISTEMA GETCWD*/
-            strcpy(caminho, getcwd(buf, size));
-            strcat(caminho, "/");
-            strcat(caminho, args[1]);
-            /*CHAMADA DE SISTEMA OPEN*/
-            origem = open(caminho, O_RDONLY);
-            if (origem< 0 || destino<0)
-            {
-                printf("erro ao abrir arquivo\n");
-            }else{
-                /*CHAMADA DE SISTEMA READ*/
-                read(origem, conteudo, 5000);
-                write(destino, conteudo, strlen(conteudo));
-                /*CHAMADA DE SISTEMA CLOSE*/
-                close(destino);
-                close(origem);
-                valido = 1;
-            }
-        }
-
-        /*##################################################################*/
-
-        if(strcmp(args[0], "cat") == 0 && tam == 2){
-            int arquivo;
-            /*CHAMADA DE SISTEMA GETCWD*/
-            strcpy(caminho, getcwd(buf, size));
-            strcat(caminho, "/");
-            strcat(caminho, args[1]);
-            /*CHAMADA DE SISTEMA OPEN*/
-            arquivo = open(caminho, O_RDONLY);
-            if (arquivo < 0){
-                printf("erro ao abrir arquivo\n");
-            }else
-            {
-                /*CHAMADA DE SISTEMA READ*/
-                read(arquivo, conteudo, 5000);
-                printf("%s\n", conteudo);
-            }
-            /*CHAMADA DE SISTEMA CLOSE*/
-            close(arquivo);
-            valido = 1;
-        }
-
-        /*##################################################################*/
-
         if (strcmp(args[0], "sort") == 0 && tam == 2)
         {
             int arquivo, count = 1, menor;
@@ -419,7 +382,7 @@ int main(int argc, char const *argv[])
                 token = strtok(NULL, "\n");
             }
             count = i;  
-            /*--*/
+            /*-----------------------------------------------*/
             char tmp[500];
             for (i = 0; i < count-1; i++) {
                 menor = i;
@@ -432,7 +395,7 @@ int main(int argc, char const *argv[])
                 strcpy(linhas[menor], linhas[i]);
                 strcpy(linhas[i], tmp);
             }
-            /*--*/
+            /*-----------------------------------------------*/
             for (i = 0; i < count; i++)
             {
                 printf("%s\n", linhas[i]);
@@ -452,18 +415,6 @@ int main(int argc, char const *argv[])
             close(arquivo);
             valido = 1;
         }
-
-        /*##################################################################*/
-
-        if (strcmp(args[0], "exit") == 0)
-        {
-            puts("Saindo...");
-            /*CHAMADA DE SISTEMA EXIT*/
-            exit(0);
-        }
-        
-        /*##################################################################*/
-
         if (valido == 0)
         {
             printf("%s: comando nao encontrado\n", args[0]);

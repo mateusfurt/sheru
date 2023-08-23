@@ -78,10 +78,10 @@ int main(int argc, char const *argv[])
             strcpy(caminho, getcwd(buf, size));
             strcat(caminho, "/");
             strcat(caminho, args[1]);
-            
+            /*CHAMADA DE SISTEMA MKDIR*/
             if (mkdir(caminho, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) < 0)
             {
-                printf("chamada de sistema falhou\n");
+                printf("nao foi possivel criar diretorio\n");
             }
             
             valido = 1;
@@ -166,6 +166,7 @@ int main(int argc, char const *argv[])
                     
                     
                     struct stat file_stat;
+                    /*CHAMADA DE SISTEMA STAT*/
                     if (lstat(caminho, &file_stat) == 0) {
                         printf((S_ISDIR(file_stat.st_mode)) ? "d" : "-");
                         printf((file_stat.st_mode & S_IRUSR) ? "r" : "-");
@@ -196,6 +197,7 @@ int main(int argc, char const *argv[])
                     strcat(caminho, "/");
                     strcat(caminho, entry->d_name);
                     struct stat file_stat;
+                    /*CHAMADA DE SISTEMA STAT*/
                     if (lstat(caminho, &file_stat) == 0) {
                         if(entry->d_name[0] != '.'){
                         printf((S_ISDIR(file_stat.st_mode)) ? "d" : "-");
@@ -275,6 +277,7 @@ int main(int argc, char const *argv[])
             strcpy(caminho, getcwd(buf, size));
             strcat(caminho, "/");
             strcat(caminho, args[1]);
+            /*CHAMADA DE SISTEMA CHDIR*/
             if (chdir(caminho) == -1)
             {
                 printf("chamada de sistema falhou\n");
@@ -307,24 +310,43 @@ int main(int argc, char const *argv[])
                 read(origem, conteudo, 5000);
                 /*CHAMADA DE SISTEMA WRITE*/
                 write(destino, conteudo, strlen(conteudo));
+                /*CHAMADA DE SISTEMA UNLINK*/
                 unlink(caminho);
-                /*CHAMADA DE SISTEMA CLOSE*/
-                close(destino);
-                close(origem);
-                valido =1;
+                
+                
             }
+            /*CHAMADA DE SISTEMA CLOSE*/
+            close(destino);
+            close(origem);
+            valido =1;
         }
+        if (strcmp(args[0], "mv") == 0 && tam < 3)
+        {
+            printf("parametros insuficientes\n");
+            valido = 1;
+        }
+        
 
         /*##################################################################*/
 
         if (strcmp(args[0], "rm") == 0 && tam == 2)
         {
+            int erro = 0;
             /*CHAMADA DE SISTEMA GETCWD*/
             strcpy(caminho, getcwd(buf, size));
             strcat(caminho, "/");
             strcat(caminho, args[1]);
-            unlink(caminho);
-            rmdir(caminho);
+            /*CHAMADA DE SISTEMA UNLINK*/
+            
+            if (unlink(caminho)<0) erro++;
+            /*CHAMADA DE SISTEMA RMDIR*/
+            if(rmdir(caminho)<0) erro++;
+            if(erro == 2)printf("nao foi possivel remover\n");
+            valido = 1;
+        }
+        if (strcmp(args[0], "rm") == 0 && tam < 2)
+        {
+            printf("parametros insuficientes\n");
             valido = 1;
         }
 
@@ -355,8 +377,13 @@ int main(int argc, char const *argv[])
                 /*CHAMADA DE SISTEMA CLOSE*/
                 close(destino);
                 close(origem);
-                valido = 1;
             }
+            valido = 1;
+        }
+        if (strcmp(args[0], "cp") == 0 && tam < 3)
+        {
+            printf("parametros insuficientes\n");
+            valido = 1;
         }
 
         /*##################################################################*/
@@ -379,6 +406,11 @@ int main(int argc, char const *argv[])
             }
             /*CHAMADA DE SISTEMA CLOSE*/
             close(arquivo);
+            valido = 1;
+        }
+        if (strcmp(args[0], "cat") == 0 && tam < 2)
+        {
+            printf("parametros insuficientes\n");
             valido = 1;
         }
 
@@ -450,6 +482,11 @@ int main(int argc, char const *argv[])
             
             /*CHAMADA DE SISTEMA CLOSE*/
             close(arquivo);
+            valido = 1;
+        }
+        if (strcmp(args[0], "sort") == 0 && tam < 2)
+        {
+            printf("parametros insuficientes\n");
             valido = 1;
         }
 

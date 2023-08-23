@@ -504,10 +504,7 @@ int main(int argc, char const *argv[])
         if (valido == 0)
         {
             printf("%s: comando nao encontrado\n", args[0]);
-        }
-        
+        }   
     }
-    
-
     return 0;
 }

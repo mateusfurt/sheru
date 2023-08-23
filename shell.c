@@ -10,22 +10,6 @@
 #include <time.h>
 #include <fcntl.h>
 
-void sortnome(char **vet, int tam){
-  int i, j, menor;
-  char tmp[500];
-  for (i = 0; i < tam-1; i++) {
-    menor = i;
-    for (j = i + 1; j < tam; j++) {
-      if (strcmp(vet[j], vet[menor]) < 0) {
-        menor = j;
-      }
-    }
-    strcpy(tmp, vet[menor]);
-    strcpy(vet[menor], vet[i]);
-    strcpy(vet[i], tmp);
-  }
-}
-
 void tiraenter(char texto[]){
     int tam;
     tam = strlen(texto);
@@ -42,7 +26,7 @@ int main(int argc, char const *argv[])
     char buf[500];
     char caminho[500];
     struct dirent *entry;
-    /*CHAMADA DE SISTEMA GETOGIN*/
+    /*CHAMADA DE SISTEMA GETLOGIN*/
     char *user = getlogin();
     size_t size = 500;
     /*CHAMADA DE SISTEMA GETCWD*/
@@ -76,8 +60,6 @@ int main(int argc, char const *argv[])
             token = strtok(NULL, " ");
         }
         tam = i;
-        //printf("tamanho%d", tam);
-        //printf("ESCREVEU: %s\n", texto);
         if (strcmp(texto, "") == 0)
         {
             valido = 1;
@@ -85,52 +67,62 @@ int main(int argc, char const *argv[])
         
         if (strcmp(args[0], "ls") == 0 && tam == 1)
         {
-            /*CHAMADA DE SISTEMA OPENDIR*/
+            /*CHAMADA DE SISTEMA OPENDIR e GETCWD*/
             DIR *dir = opendir(getcwd(buf, size));
             if (dir == NULL)
             {
                 printf("chamada de sistema falhou\n");
-            }
-            /*CHAMADA DE SISTEMA READDIR*/
-            while ((entry = readdir(dir)) != NULL) {
-                
-                if(entry->d_name[0] != '.'){
-                    printf("%s ", entry->d_name);
+            }else{
+                /*CHAMADA DE SISTEMA READDIR*/
+                while ((entry = readdir(dir)) != NULL) {
+                    
+                    if(entry->d_name[0] != '.'){
+                        printf("%s ", entry->d_name);
+                    }
                 }
+                printf("\n");
+                /*CHAMADA DE SISTEMA CLOSEDIR*/
+                closedir(dir);
             }
-            printf("\n");
-            closedir(dir);
+            
             valido = 1;
         }
         if (strcmp(args[0], "ls") == 0 && strcmp(args[1], "-a") == 0 && tam == 2)
         {
-            /*CHAMADA DE SISTEMA OPENDIR*/
+            /*CHAMADA DE SISTEMA OPENDIR e GETCWD*/
             DIR *dir = opendir(getcwd(buf, size));
             if (dir == NULL)
             {
                 printf("chamada de sistema falhou\n");
+            }else{
+                /*CHAMADA DE SISTEMA READDIR*/
+                while ((entry = readdir(dir)) != NULL) {
+                    
+                    printf("%s ", entry->d_name);
+                }
+                printf("\n");
+                /*CHAMADA DE SISTEMA CLOSEDIR*/
+                closedir(dir);
             }
-            /*CHAMADA DE SISTEMA READDIR*/
-            while ((entry = readdir(dir)) != NULL) {
-                
-                printf("%s ", entry->d_name);
-            }
-            printf("\n");
-            closedir(dir);
+            
             valido = 1;
         }
+
         if (strcmp(args[0], "ls") == 0 && (strcmp(args[1], "-l") == 0 || strcmp(args[2], "-l") == 0))
         {
-            /*CHAMADA DE SISTEMA OPENDIR*/
+            /*CHAMADA DE SISTEMA OPENDIR e GETCWD*/
             DIR *dir = opendir(getcwd(buf, size));
             if (dir == NULL)
             {
                 printf("chamada de sistema falhou\n");
+            }else{
+                
             }
             /*CHAMADA DE SISTEMA READDIR*/
             while ((entry = readdir(dir)) != NULL) {
                 if (strcmp(args[1], "-a") == 0 || strcmp(args[2], "-a") == 0)
                 {
+                    /*CHAMADA DE SISTEMA GETCWD*/
                     strcpy(caminho, getcwd(buf, size));
                     strcat(caminho, "/");
                     strcat(caminho, entry->d_name);
@@ -160,6 +152,7 @@ int main(int argc, char const *argv[])
                     }
                 }else
                 {
+                    /*CHAMADA DE SISTEMA GETCWD*/
                     strcpy(caminho, getcwd(buf, size));
                     strcat(caminho, "/");
                     strcat(caminho, entry->d_name);
@@ -192,6 +185,7 @@ int main(int argc, char const *argv[])
                     
                 }
             }
+            /*CHAMADA DE SISTEMA CLOSEDIR*/
             closedir(dir);
             valido = 1;
             
@@ -218,7 +212,7 @@ int main(int argc, char const *argv[])
                 printf("chamada de sistema falhou\n");
             }
             }
-            
+            /*CHAMADA DE SISTEMA GETCWD*/
             strcpy(caminho, getcwd(buf, size));
             strcat(caminho, "/");
             strcat(caminho, args[1]);
@@ -251,22 +245,27 @@ int main(int argc, char const *argv[])
         }
         if(strcmp(args[0], "cat") == 0 && tam == 2){
             int arquivo;
+            /*CHAMADA DE SISTEMA GETCWD*/
             strcpy(caminho, getcwd(buf, size));
             strcat(caminho, "/");
-            strcat(caminho, args[1]);;
-            arquivo = open (caminho, O_RDONLY);
+            strcat(caminho, args[1]);
+            /*CHAMADA DE SISTEMA OPEN*/
+            arquivo = open(caminho, O_RDONLY);
             if (arquivo < 0){
                 printf("erro ao abrir arquivo\n");
             }else
             {
+                /*CHAMADA DE SISTEMA READ*/
                 read(arquivo, conteudo, 5000);
                 printf("%s\n", conteudo);
             }
+            /*CHAMADA DE SISTEMA CLOSE*/
             close(arquivo);
             valido = 1;
         }
         if (strcmp(args[0], "mkdir") == 0 && tam == 2)
         {
+            /*CHAMADA DE SISTEMA GETCWD*/
             strcpy(caminho, getcwd(buf, size));
             strcat(caminho, "/");
             strcat(caminho, args[1]);
@@ -275,6 +274,7 @@ int main(int argc, char const *argv[])
         }
         if (strcmp(args[0], "rm") == 0 && tam == 2)
         {
+            /*CHAMADA DE SISTEMA GETCWD*/
             strcpy(caminho, getcwd(buf, size));
             strcat(caminho, "/");
             strcat(caminho, args[1]);
@@ -285,16 +285,22 @@ int main(int argc, char const *argv[])
         if (strcmp(args[0], "cp") == 0 && tam == 3)
         {
             int origem, destino;
+            /*CHAMADA DE SISTEMA GETCWD*/
             strcpy(caminho, getcwd(buf, size));
             strcat(caminho, "/");
             strcat(caminho, args[2]);
+            /*CHAMADA DE SISTEMA OPEN*/
             destino = open (caminho,  O_WRONLY | O_CREAT | O_TRUNC, 0755);
+            /*CHAMADA DE SISTEMA GETCWD*/
             strcpy(caminho, getcwd(buf, size));
             strcat(caminho, "/");
             strcat(caminho, args[1]);
+            /*CHAMADA DE SISTEMA OPEN*/
             origem = open(caminho, O_RDONLY);
+            /*CHAMADA DE SISTEMA READ*/
             read(origem, conteudo, 5000);
             write(destino, conteudo, strlen(conteudo));
+            /*CHAMADA DE SISTEMA CLOSE*/
             close(destino);
             close(origem);
             valido =1;
@@ -302,17 +308,24 @@ int main(int argc, char const *argv[])
         if (strcmp(args[0], "mv") == 0 && tam == 3)
         {
             int origem, destino;
+            /*CHAMADA DE SISTEMA GETCWD*/
             strcpy(caminho, getcwd(buf, size));
             strcat(caminho, "/");
             strcat(caminho, args[2]);
+            /*CHAMADA DE SISTEMA OPEN*/
             destino = open (caminho,  O_WRONLY | O_CREAT | O_TRUNC, 0755);
+            /*CHAMADA DE SISTEMA GETCWD*/
             strcpy(caminho, getcwd(buf, size));
             strcat(caminho, "/");
             strcat(caminho, args[1]);
+            /*CHAMADA DE SISTEMA OPEN*/
             origem = open(caminho, O_RDONLY);
+            /*CHAMADA DE SISTEMA READ*/
             read(origem, conteudo, 5000);
+            /*CHAMADA DE SISTEMA WRITE*/
             write(destino, conteudo, strlen(conteudo));
             unlink(caminho);
+            /*CHAMADA DE SISTEMA CLOSE*/
             close(destino);
             close(origem);
             valido =1;
@@ -320,10 +333,13 @@ int main(int argc, char const *argv[])
         if (strcmp(args[0], "sort") == 0 && tam == 2)
         {
             int arquivo, count = 1, menor;
+            /*CHAMADA DE SISTEMA GETCWD*/
             strcpy(caminho, getcwd(buf, size));
             strcat(caminho, "/");
             strcat(caminho, args[1]);
+            /*CHAMADA DE SISTEMA OPEN*/
             arquivo = open(caminho, O_RDONLY);
+            /*CHAMADA DE SISTEMA READ*/
             read(arquivo, conteudo, 5000);
             for ( i = 0; i < strlen(conteudo); i++)
             {
@@ -337,40 +353,22 @@ int main(int argc, char const *argv[])
             for(int i = 0; i < count; i++) linhas[i] = (char *)malloc(500 * sizeof(char));;
             for (i = 0; i < count; i++)
             for(int i = 0; i < count; i++) strcpy(linhas[i], " ");
-            //for ( i = 0, j==0, k=0; k < strlen(conteudo);j++, k++)
-            //{
-            //    linhas[i][j]=conteudo[k];
-            //    if (conteudo[k]=='\n')
-            //    {
-            //        linhas[i][j]='\0';
-            //        j=-1;
-            //        i++;
-            //    }    
-            //}
             char *token = strtok(conteudo, "\n");
             for (i = 0; token != NULL; i++)
             {
                 strcpy(linhas[i], token); 
-                token = strtok(NULL, " ");
+                token = strtok(NULL, "\n");
             }
-            count = i;
-            //for ( i = 0; i < count; i++)printf("%s\n", linhas[i]);
-            
-            
-
+            count = i;  
             /*-----------------------------------------------*/
             char tmp[500];
             for (i = 0; i < count-1; i++) {
                 menor = i;
                 for (j = i + 1; j < count; j++) {
-                    if (strcmp(linhas[j], linhas[menor]) < 0) {
-                        menor = j;
-                        
-                        //printf("%s\n", tmp);
-                    }
+                if (strcmp(linhas[j], linhas[menor]) < 0) {
+                    menor = j;
                 }
-                
-                
+                }
                 strcpy(tmp, linhas[menor]);
                 strcpy(linhas[menor], linhas[i]);
                 strcpy(linhas[i], tmp);
@@ -387,15 +385,13 @@ int main(int argc, char const *argv[])
             }
             
             free(linhas);
+            /*CHAMADA DE SISTEMA CLOSE*/
             close(arquivo);
-            valido =1;
+            valido = 1;
         }
-        
-        
         if (valido == 0)
         {
             printf("%s: comando nao encontrado\n", args[0]);
-            
         }
         
     }

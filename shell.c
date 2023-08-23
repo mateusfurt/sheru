@@ -336,37 +336,41 @@ int main(int argc, char const *argv[])
             char **linhas = (char **)malloc(count * sizeof(char*));
             for(int i = 0; i < count; i++) linhas[i] = (char *)malloc(500 * sizeof(char));;
             for (i = 0; i < count; i++)
+            for(int i = 0; i < count; i++) strcpy(linhas[i], " ");
+            //for ( i = 0, j==0, k=0; k < strlen(conteudo);j++, k++)
+            //{
+            //    linhas[i][j]=conteudo[k];
+            //    if (conteudo[k]=='\n')
+            //    {
+            //        linhas[i][j]='\0';
+            //        j=-1;
+            //        i++;
+            //    }    
+            //}
+            char *token = strtok(conteudo, "\n");
+            for (i = 0; token != NULL; i++)
             {
-                printf("%s\n", linhas[i]);
-                
+                strcpy(linhas[i], token); 
+                token = strtok(NULL, " ");
             }
-            for(int i = 0; i < count; i++) strcpy(linhas[i], "");
-            for ( i = 0, j==0, k=0; k < strlen(conteudo);j++, k++)
-            {
-                linhas[i][j]=conteudo[k];
-                if (conteudo[k]=='\n')
-                {
-                    linhas[i][j]='\0';
-                    j=-1;
-                    i++;
-                }
-                
-            }
+            count = i;
+            //for ( i = 0; i < count; i++)printf("%s\n", linhas[i]);
+            
+            
 
             /*-----------------------------------------------*/
             char tmp[500];
             for (i = 0; i < count-1; i++) {
                 menor = i;
-                strcpy(tmp, linhas[i]);
                 for (j = i + 1; j < count; j++) {
                     if (strcmp(linhas[j], linhas[menor]) < 0) {
                         menor = j;
-                        strcpy(tmp, linhas[j]);
+                        
                         //printf("%s\n", tmp);
                     }
                 }
                 
-                //printf("%s\n", linhas[menor]);
+                
                 strcpy(tmp, linhas[menor]);
                 strcpy(linhas[menor], linhas[i]);
                 strcpy(linhas[i], tmp);
